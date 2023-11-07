@@ -1,15 +1,14 @@
 package com.dws.challenge.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,14 +31,16 @@ public class TransferBewteenAccountsController {
 	}
 	
 	 @PostMapping(value="/transferMoneyBetweenAccounts")
+	 @Scope(value = "Session")
 	    public ResponseEntity<TransferBetweenAcountResponse> getTestData(@Valid @RequestBody TransferBetweenAcountRequest request) {
 		 	TransferBetweenAcountResponse response = transferBetweenAcountService.transferAmountBetweenAccount(request);
 		 	
-	        if(response.getError().isBlank()) {
-	        	return ResponseEntity.status(500).body(response);
+	        if(response.getError()==null || response.getError().isBlank()) {
 	        	
+	        	return ResponseEntity.of(Optional.of(response));
 	        }else {
-	        	 return ResponseEntity.of(Optional.of(response));
+	        	 
+	        	 return ResponseEntity.status(500).body(response);
 	        	
 	        }
 	        
