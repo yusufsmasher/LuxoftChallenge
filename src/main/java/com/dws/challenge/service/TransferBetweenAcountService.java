@@ -31,7 +31,7 @@ public class TransferBetweenAcountService {
 		this.emailNotificationService=emailNotificationService;
 	}
 	
-	@Synchronized
+	//@Synchronized
 	public TransferBetweenAcountResponse transferAmountBetweenAccount(TransferBetweenAcountRequest request) {
 		log.info("transferAmountBetweenAccount Started");
 		
@@ -62,7 +62,7 @@ public class TransferBetweenAcountService {
 		}
 		
 		if( accountFrom.getBalance().compareTo(request.getAmount())!=-1) {
-			synchronized (this) {
+//			synchronized (this) {
 				accountFrom.setBalance(accountFrom.getBalance().subtract(request.getAmount()));
 			response.setStatus(Success);
 			
@@ -70,7 +70,7 @@ public class TransferBetweenAcountService {
 					.concat(request.getAmount().toString()));
 			emailNotificationService.notifyAboutTransfer(accountTo, Common_Message.concat(accountTo.getAccountId()).concat(Credit_Message)
 					.concat(request.getAmount().toString()));
-			}
+//			}
 		}else {
 			response.setStatus(Failure);
 			response.setError(Insufficient_Balance.concat(accountFrom.getAccountId()));

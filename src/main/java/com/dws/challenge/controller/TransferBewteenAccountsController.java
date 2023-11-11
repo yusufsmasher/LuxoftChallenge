@@ -2,6 +2,8 @@ package com.dws.challenge.controller;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -31,19 +33,42 @@ public class TransferBewteenAccountsController {
 	}
 	
 	 @PostMapping(value="/transferMoneyBetweenAccounts")
-	 @Scope(value = "Session")
-	    public ResponseEntity<TransferBetweenAcountResponse> getTestData(@Valid @RequestBody TransferBetweenAcountRequest request) {
-		 	TransferBetweenAcountResponse response = transferBetweenAcountService.transferAmountBetweenAccount(request);
+	 @Scope(value = org.springframework.web.context.WebApplicationContext.SCOPE_REQUEST)
+	    public ResponseEntity<TransferBetweenAcountResponse> getTestData(@Valid @RequestBody TransferBetweenAcountRequest request) throws InterruptedException, ExecutionException {
+		 	CompletableFuture<TransferBetweenAcountResponse> future = CompletableFuture.
+		 			supplyAsync(()->transferBetweenAcountService.transferAmountBetweenAccount(request));
+		 	//boolean isDoneFlag = false;
 		 	
-	        if(response.getError()==null || response.getError().isBlank()) {
-	        	
-	        	return ResponseEntity.of(Optional.of(response));
-	        }else {
-	        	 
-	        	 return ResponseEntity.status(500).body(response);
-	        	
-	        }
-	        
+			 		
+			 	
+		 		
+		 		TransferBetweenAcountResponse response = future.get();
+		 		if(response.getError()==null || response.getError().isBlank()) {
+		        	
+		        	return ResponseEntity.of(Optional.of(response));
+		        }else {
+		        	 
+		        	 return ResponseEntity.status(500).body(response);
+		        	
+		        }
+		 		
+		 		
+		 		
+		 	
+		 	
+		 	//return ResponseEntity.status(500).body(new TransferBetweenAcountResponse());
+		 	
+//		 	TransferBetweenAcountResponse response = transferBetweenAcountService.transferAmountBetweenAccount(request);
+//		 	
+//	        
+//if(response.getError()==null || response.getError().isBlank()) {
+//	        	
+//	        	return ResponseEntity.of(Optional.of(response));
+//	        }else {
+//	        	 
+//	        	 return ResponseEntity.status(500).body(response);
+//	        	
+//	        }
 	        
 	    }
 
